@@ -1,24 +1,10 @@
-# energy-n14-e13-standalone-ankle-joint
+<!--
+ * @Author      : Mr.bin
+ * @Date        : 2023-06-25 11:15:42
+ * @LastEditTime: 2023-06-25 11:36:00
+ * @Description : energy-n14-e13-standalone-ankle-joint
+-->
 
-## Project setup
-```
-npm install
-```
+# 踝关节评估与康复训练系统-单机版
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 基本设备信息
