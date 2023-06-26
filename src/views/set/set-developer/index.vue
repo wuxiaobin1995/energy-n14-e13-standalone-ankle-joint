@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 21:42:25
- * @LastEditTime: 2023-06-25 21:42:38
+ * @LastEditTime: 2023-06-26 10:45:59
  * @Description : 开发者
 -->
 <template>
@@ -19,6 +19,19 @@
           >打开控制台</el-button
         >
       </div>
+
+      <!-- 免责声明 -->
+      <div class="disclaimer">
+        <el-input class="item" placeholder="请输入终端用户名称" v-model="name">
+          <template slot="prepend">终端用户名称：</template>
+        </el-input>
+        <el-input class="item" placeholder="请输入设备编号" v-model="deviceId">
+          <template slot="prepend">设备编号：</template>
+        </el-input>
+        <el-button class="item" type="primary" @click="handleSetDisclaimer"
+          >确 定</el-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -29,6 +42,18 @@ import { remote } from 'electron'
 
 export default {
   name: 'set-developer',
+
+  data() {
+    return {
+      name: '',
+      deviceId: ''
+    }
+  },
+
+  created() {
+    this.name = window.localStorage.getItem('disclaimer_name')
+    this.deviceId = window.localStorage.getItem('disclaimer_device_id')
+  },
 
   methods: {
     /**
@@ -52,6 +77,20 @@ export default {
           message: `打开控制台失败：${err}`
         })
       }
+    },
+
+    /**
+     * @description: 设置免责声明
+     */
+    handleSetDisclaimer() {
+      window.localStorage.setItem('disclaimer_name', this.name)
+      window.localStorage.setItem('disclaimer_device_id', this.deviceId)
+
+      this.$message({
+        type: 'success',
+        message: `设置免责声明成功！`,
+        duration: 3000
+      })
     }
   }
 }
@@ -83,6 +122,18 @@ export default {
       @include flex(column, center, center);
       .item {
         font-size: 28px;
+      }
+    }
+
+    .disclaimer {
+      width: 50%;
+      margin-top: 50px;
+      border: 2px solid rgb(133, 130, 130);
+      border-radius: 20px;
+      padding: 20px 20px 0 20px;
+      @include flex(column, stretch, stretch);
+      .item {
+        margin-bottom: 30px;
       }
     }
   }
