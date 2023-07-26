@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 11:15:18
- * @LastEditTime: 2023-06-25 11:30:33
+ * @LastEditTime: 2023-07-26 16:26:32
  * @Description : 渲染进程入口
  */
 import Vue from 'vue'

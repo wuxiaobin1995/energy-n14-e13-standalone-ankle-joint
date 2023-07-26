@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 11:40:06
- * @LastEditTime: 2023-06-25 11:40:19
+ * @LastEditTime: 2023-07-25 09:47:10
  * @Description : 顶部栏
 -->
 <template>
@@ -15,6 +15,13 @@
         @click.native="handleToHome"
       ></el-image>
       <span class="text">踝关节评估与康复训练系统</span>
+    </div>
+
+    <!-- 蓝牙连接状态 -->
+    <div class="bluetooth">
+      蓝牙连接状态：{{
+        this.$store.state.isBluetooth === true ? '已连接【√】' : '已断开【×】'
+      }}
     </div>
 
     <!-- 其他 -->
@@ -36,20 +43,17 @@
               command="设置医院名称"
               >设置医院名称</el-dropdown-item
             >
-            <el-dropdown-item icon="el-icon-odometer" divided command="调零"
+            <el-dropdown-item icon="el-icon-odometer" divided command="蓝牙连接"
+              >蓝牙连接</el-dropdown-item
+            >
+            <el-dropdown-item icon="el-icon-odometer" command="调零"
               >调零</el-dropdown-item
             >
-            <el-dropdown-item icon="el-icon-thumb" command="设置K"
-              >设置K</el-dropdown-item
-            >
-            <el-dropdown-item
-              icon="el-icon-s-promotion"
-              divided
-              command="开发者"
-              >开发者</el-dropdown-item
-            >
-            <el-dropdown-item icon="el-icon-s-data" command="数据迁移"
+            <el-dropdown-item icon="el-icon-s-data" divided command="数据迁移"
               >数据迁移</el-dropdown-item
+            >
+            <el-dropdown-item icon="el-icon-s-promotion" command="开发者"
+              >开发者</el-dropdown-item
             >
           </el-dropdown-menu>
         </el-dropdown>
@@ -103,23 +107,43 @@ export default {
             })
             .catch(() => {})
           break
-        case '调零':
+        case '蓝牙连接':
           this.$router.push({
-            path: '/set-zero'
+            path: '/set-bluetooth-connect'
           })
           break
-        case '设置K':
+        case '调零':
+          if (this.$store.state.isBluetooth) {
+            this.$router.push({
+              path: '/set-zero'
+            })
+          } else {
+            this.$confirm(`检测到您还没有连接蓝牙！`, '提示', {
+              type: 'warning',
+              center: true,
+              showCancelButton: false,
+              confirmButtonText: '前去连接'
+            })
+              .then(() => {
+                this.$router.push({
+                  path: '/set-bluetooth-connect'
+                })
+              })
+              .catch(() => {})
+          }
+          break
+        case '数据迁移':
           this.$prompt('请输入密码', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
-            inputPattern: /^energy$/,
+            inputPattern: /^htpm$/,
             inputErrorMessage: '密码不正确',
             showClose: true,
             closeOnClickModal: false
           })
             .then(() => {
               this.$router.push({
-                path: '/set-k'
+                path: '/set-data-migration'
               })
             })
             .catch(() => {})
@@ -136,22 +160,6 @@ export default {
             .then(() => {
               this.$router.push({
                 path: '/set-developer'
-              })
-            })
-            .catch(() => {})
-          break
-        case '数据迁移':
-          this.$prompt('请输入密码', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            inputPattern: /^htpm$/,
-            inputErrorMessage: '密码不正确',
-            showClose: true,
-            closeOnClickModal: false
-          })
-            .then(() => {
-              this.$router.push({
-                path: '/set-data-migration'
               })
             })
             .catch(() => {})

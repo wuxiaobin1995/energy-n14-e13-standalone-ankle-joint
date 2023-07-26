@@ -1,14 +1,19 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-06-23 09:06:38
- * @LastEditTime: 2023-06-26 10:18:26
+ * @LastEditTime: 2023-07-26 18:05:13
  * @Description : home
 -->
 <template>
   <div class="home">
     <div class="wrapper">
       <div class="main-photo">
-        <el-image class="item0" :src="src0" fit="scale-down"></el-image>
+        <el-image
+          :style="{ display: 'none' }"
+          class="item0"
+          :src="src0"
+          fit="scale-down"
+        ></el-image>
       </div>
       <div class="one">
         <el-image
@@ -16,12 +21,6 @@
           :src="src3"
           fit="scale-down"
           @click.native="handleClick('src3')"
-        ></el-image>
-        <el-image
-          class="item item4"
-          :src="src4"
-          fit="scale-down"
-          @click.native="handleClick('src4')"
         ></el-image>
       </div>
       <div class="two">
@@ -32,10 +31,10 @@
           @click.native="handleClick('src2')"
         ></el-image>
         <el-image
-          class="item item5"
-          :src="src5"
+          class="item item4"
+          :src="src4"
           fit="scale-down"
-          @click.native="handleClick('src5')"
+          @click.native="handleClick('src4')"
         ></el-image>
       </div>
       <div class="three">
@@ -46,10 +45,10 @@
           @click.native="handleClick('src1')"
         ></el-image>
         <el-image
-          class="item item6"
-          :src="src6"
+          class="item item5"
+          :src="src5"
           fit="scale-down"
-          @click.native="handleClick('src6')"
+          @click.native="handleClick('src5')"
         ></el-image>
       </div>
 
@@ -68,9 +67,9 @@
           <el-button class="btn" type="primary" @click="handleGoTrainRecord"
             >训练记录</el-button
           >
-          <el-button class="btn" type="warning" @click="handleGoMttRecord"
+          <!-- <el-button class="btn" type="warning" @click="handleGoMttRecord"
             >MTT记录</el-button
-          >
+          > -->
         </div>
       </el-dialog>
 
@@ -151,7 +150,6 @@ export default {
       src3: require('@/assets/img/Home/训练模块.png'),
       src4: require('@/assets/img/Home/MTT模块.png'),
       src5: require('@/assets/img/Home/数据记录.png'),
-      src6: require('@/assets/img/Home/游戏.png'),
 
       centerDialogVisible: false, // 数据记录选择弹窗
 
@@ -181,9 +179,43 @@ export default {
         })
       } else if (src === 'src2') {
         if (this.$store.state.currentUserInfo.userId) {
-          this.$router.push({
-            path: '/test-select'
-          })
+          if (this.$store.state.isBluetooth) {
+            if (
+              this.$store.state.zeroStandard.xStandard !== null &&
+              this.$store.state.zeroStandard.yStandard !== null &&
+              this.$store.state.zeroStandard.zStandard !== null
+            ) {
+              this.$router.push({
+                path: '/test-introduce'
+              })
+            } else {
+              this.$confirm(`检测到您还没有校准调零！`, '提示', {
+                type: 'warning',
+                center: true,
+                showCancelButton: false,
+                confirmButtonText: '调 零'
+              })
+                .then(() => {
+                  this.$router.push({
+                    path: '/set-zero'
+                  })
+                })
+                .catch(() => {})
+            }
+          } else {
+            this.$confirm(`检测到您还没有连接蓝牙！`, '提示', {
+              type: 'warning',
+              center: true,
+              showCancelButton: false,
+              confirmButtonText: '前去连接'
+            })
+              .then(() => {
+                this.$router.push({
+                  path: '/set-bluetooth-connect'
+                })
+              })
+              .catch(() => {})
+          }
         } else {
           this.$confirm(
             `检测到您还没有选择用户，请先到用户页面进行选择！`,
@@ -204,9 +236,43 @@ export default {
         }
       } else if (src === 'src3') {
         if (this.$store.state.currentUserInfo.userId) {
-          this.$router.push({
-            path: '/train-select'
-          })
+          if (this.$store.state.isBluetooth) {
+            if (
+              this.$store.state.zeroStandard.xStandard !== null &&
+              this.$store.state.zeroStandard.yStandard !== null &&
+              this.$store.state.zeroStandard.zStandard !== null
+            ) {
+              this.$router.push({
+                path: '/train-select'
+              })
+            } else {
+              this.$confirm(`检测到您还没有校准调零！`, '提示', {
+                type: 'warning',
+                center: true,
+                showCancelButton: false,
+                confirmButtonText: '调 零'
+              })
+                .then(() => {
+                  this.$router.push({
+                    path: '/set-zero'
+                  })
+                })
+                .catch(() => {})
+            }
+          } else {
+            this.$confirm(`检测到您还没有连接蓝牙！`, '提示', {
+              type: 'warning',
+              center: true,
+              showCancelButton: false,
+              confirmButtonText: '前去连接'
+            })
+              .then(() => {
+                this.$router.push({
+                  path: '/set-bluetooth-connect'
+                })
+              })
+              .catch(() => {})
+          }
         } else {
           this.$confirm(
             `检测到您还没有选择用户，请先到用户页面进行选择！`,
@@ -226,54 +292,17 @@ export default {
             .catch(() => {})
         }
       } else if (src === 'src4') {
-        if (this.$store.state.currentUserInfo.userId) {
-          this.$router.push({
-            path: '/mtt-select'
-          })
-        } else {
-          this.$confirm(
-            `检测到您还没有选择用户，请先到用户页面进行选择！`,
-            '提示',
-            {
-              type: 'warning',
-              center: true,
-              showCancelButton: false,
-              confirmButtonText: '确 定'
-            }
-          )
-            .then(() => {
-              this.$router.push({
-                path: '/user'
-              })
-            })
-            .catch(() => {})
-        }
+        this.$confirm(`请连接对应机械部分！`, '提示', {
+          type: 'warning',
+          center: true,
+          showCancelButton: false,
+          confirmButtonText: '确 定'
+        })
+          .then(() => {})
+          .catch(() => {})
       } else if (src === 'src5') {
         if (this.$store.state.currentUserInfo.userId) {
           this.centerDialogVisible = true
-        } else {
-          this.$confirm(
-            `检测到您还没有选择用户，请先到用户页面进行选择！`,
-            '提示',
-            {
-              type: 'warning',
-              center: true,
-              showCancelButton: false,
-              confirmButtonText: '确 定'
-            }
-          )
-            .then(() => {
-              this.$router.push({
-                path: '/user'
-              })
-            })
-            .catch(() => {})
-        }
-      } else if (src === 'src6') {
-        if (this.$store.state.currentUserInfo.userId) {
-          this.$router.push({
-            path: '/game'
-          })
         } else {
           this.$confirm(
             `检测到您还没有选择用户，请先到用户页面进行选择！`,
@@ -383,20 +412,17 @@ export default {
     .one {
       margin-top: 30px;
       @include flex(row, center, center);
-      .item3 {
-        margin-right: 70px;
-      }
-      .item4 {
-        margin-left: 70px;
-      }
+      // .item3 {
+      //   margin-right: 70px;
+      // }
     }
     .two {
       @include flex(row, center, center);
       .item2 {
-        margin-right: 270px;
+        margin-right: 230px;
       }
-      .item5 {
-        margin-left: 270px;
+      .item4 {
+        margin-left: 230px;
       }
     }
     .three {
@@ -405,7 +431,7 @@ export default {
       .item1 {
         margin-right: 420px;
       }
-      .item6 {
+      .item5 {
         margin-left: 420px;
       }
     }

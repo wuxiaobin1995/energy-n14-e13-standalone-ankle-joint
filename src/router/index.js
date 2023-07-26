@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 11:15:18
- * @LastEditTime: 2023-06-25 21:35:40
+ * @LastEditTime: 2023-07-26 14:41:39
  * @Description : 路由
  */
 import Vue from 'vue'
@@ -70,26 +70,19 @@ const routes = [
         component: () => import('@/views/set/set-hospital'),
         meta: ['设置医院名称']
       },
-      // // 调零
-      // {
-      //   path: 'set-zero',
-      //   name: 'set-zero',
-      //   component: () => import('@/views/set/set-zero'),
-      //   meta: ['调零']
-      // },
-      // // 设置K
-      // {
-      //   path: 'set-k',
-      //   name: 'set-k',
-      //   component: () => import('@/views/set/set-k'),
-      //   meta: ['设置K']
-      // },
-      // 开发者
+      // 蓝牙连接
       {
-        path: 'set-developer',
-        name: 'set-developer',
-        component: () => import('@/views/set/set-developer'),
-        meta: ['开发者']
+        path: 'set-bluetooth-connect',
+        name: 'set-bluetooth-connect',
+        component: () => import('@/views/set/set-bluetooth-connect'),
+        meta: ['蓝牙连接']
+      },
+      // 调零
+      {
+        path: 'set-zero',
+        name: 'set-zero',
+        component: () => import('@/views/set/set-zero'),
+        meta: ['调零']
       },
       // 数据迁移
       {
@@ -97,21 +90,79 @@ const routes = [
         name: 'set-data-migration',
         component: () => import('@/views/set/set-data-migration'),
         meta: ['数据迁移']
-      }
-      // // 游戏
-      // {
-      //   path: 'game',
-      //   name: 'game',
-      //   component: () => import('@/views/game'),
-      //   meta: ['游戏']
-      // },
+      },
+      // 开发者
+      {
+        path: 'set-developer',
+        name: 'set-developer',
+        component: () => import('@/views/set/set-developer'),
+        meta: ['开发者']
+      },
 
       /* 测试模块 */
+      // 测试介绍
+      {
+        path: 'test-introduce',
+        name: 'test-introduce',
+        component: () => import('@/views/test-mode/introduce'),
+        meta: ['测试介绍']
+      },
+      // 跖屈
+      {
+        path: 'test-plantarFlexion',
+        name: 'test-plantarFlexion',
+        component: () => import('@/views/test-mode/plantarFlexion'),
+        meta: ['跖屈']
+      },
+      // 背屈
+      {
+        path: 'test-dorsiflex',
+        name: 'test-dorsiflex',
+        component: () => import('@/views/test-mode/dorsiflex'),
+        meta: ['背屈']
+      },
+      // 内收
+      {
+        path: 'test-adduction',
+        name: 'test-adduction',
+        component: () => import('@/views/test-mode/adduction'),
+        meta: ['内收']
+      },
+      // 外展
+      {
+        path: 'test-abduction',
+        name: 'test-abduction',
+        component: () => import('@/views/test-mode/abduction'),
+        meta: ['外展']
+      },
+      // 内翻
+      {
+        path: 'test-varus',
+        name: 'test-varus',
+        component: () => import('@/views/test-mode/varus'),
+        meta: ['内翻']
+      },
+      // 外翻
+      {
+        path: 'test-valgus',
+        name: 'test-valgus',
+        component: () => import('@/views/test-mode/valgus'),
+        meta: ['外翻']
+      }
 
       /* 训练模块 */
 
       /* MTT分阶模块 */
     ]
+  },
+
+  /* 测试报告 */
+  // 踝关节活动度测试-PDF报告
+  {
+    path: '/test-pdf',
+    name: 'test-pdf',
+    component: () => import('@/views/test-mode/pdf'),
+    meta: ['踝关节活动度测试-PDF报告']
   },
 
   {
