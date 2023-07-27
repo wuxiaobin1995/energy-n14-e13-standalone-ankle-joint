@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-06-23 09:06:38
- * @LastEditTime: 2023-07-26 18:05:13
+ * @LastEditTime: 2023-07-27 09:36:05
  * @Description : home
 -->
 <template>
@@ -235,62 +235,66 @@ export default {
             .catch(() => {})
         }
       } else if (src === 'src3') {
-        if (this.$store.state.currentUserInfo.userId) {
-          if (this.$store.state.isBluetooth) {
-            if (
-              this.$store.state.zeroStandard.xStandard !== null &&
-              this.$store.state.zeroStandard.yStandard !== null &&
-              this.$store.state.zeroStandard.zStandard !== null
-            ) {
-              this.$router.push({
-                path: '/train-select'
-              })
-            } else {
-              this.$confirm(`检测到您还没有校准调零！`, '提示', {
-                type: 'warning',
-                center: true,
-                showCancelButton: false,
-                confirmButtonText: '调 零'
-              })
-                .then(() => {
-                  this.$router.push({
-                    path: '/set-zero'
-                  })
-                })
-                .catch(() => {})
-            }
-          } else {
-            this.$confirm(`检测到您还没有连接蓝牙！`, '提示', {
-              type: 'warning',
-              center: true,
-              showCancelButton: false,
-              confirmButtonText: '前去连接'
-            })
-              .then(() => {
-                this.$router.push({
-                  path: '/set-bluetooth-connect'
-                })
-              })
-              .catch(() => {})
-          }
-        } else {
-          this.$confirm(
-            `检测到您还没有选择用户，请先到用户页面进行选择！`,
-            '提示',
-            {
-              type: 'warning',
-              center: true,
-              showCancelButton: false,
-              confirmButtonText: '确 定'
-            }
-          )
-            .then(() => {
-              this.$router.push({
-                path: '/user'
-              })
-            })
-            .catch(() => {})
-        }
+        this.$router.push({
+          path: '/train-parameter'
+        })
+
+        // if (this.$store.state.currentUserInfo.userId) {
+        //   if (this.$store.state.isBluetooth) {
+        //     if (
+        //       this.$store.state.zeroStandard.xStandard !== null &&
+        //       this.$store.state.zeroStandard.yStandard !== null &&
+        //       this.$store.state.zeroStandard.zStandard !== null
+        //     ) {
+        //       this.$router.push({
+        //         path: '/train-parameter'
+        //       })
+        //     } else {
+        //       this.$confirm(`检测到您还没有校准调零！`, '提示', {
+        //         type: 'warning',
+        //         center: true,
+        //         showCancelButton: false,
+        //         confirmButtonText: '调 零'
+        //       })
+        //         .then(() => {
+        //           this.$router.push({
+        //             path: '/set-zero'
+        //           })
+        //         })
+        //         .catch(() => {})
+        //     }
+        //   } else {
+        //     this.$confirm(`检测到您还没有连接蓝牙！`, '提示', {
+        //       type: 'warning',
+        //       center: true,
+        //       showCancelButton: false,
+        //       confirmButtonText: '前去连接'
+        //     })
+        //       .then(() => {
+        //         this.$router.push({
+        //           path: '/set-bluetooth-connect'
+        //         })
+        //       })
+        //       .catch(() => {})
+        //   }
+        // } else {
+        //   this.$confirm(
+        //     `检测到您还没有选择用户，请先到用户页面进行选择！`,
+        //     '提示',
+        //     {
+        //       type: 'warning',
+        //       center: true,
+        //       showCancelButton: false,
+        //       confirmButtonText: '确 定'
+        //     }
+        //   )
+        //     .then(() => {
+        //       this.$router.push({
+        //         path: '/user'
+        //       })
+        //     })
+        //     .catch(() => {})
+        // }
       } else if (src === 'src4') {
         this.$confirm(`请连接对应机械部分！`, '提示', {
           type: 'warning',

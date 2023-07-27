@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-07-26 13:55:38
+ * @LastEditTime: 2023-07-27 14:25:27
  * @Description : 背屈
 -->
 <template>
@@ -171,7 +171,7 @@ export default {
               // const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
               console.log(x)
 
-              this.xAngle = this.xStandard - x
+              this.xAngle = x - this.xStandard
 
               /* 数据校验 */
               if (!isNaN(this.xAngle)) {

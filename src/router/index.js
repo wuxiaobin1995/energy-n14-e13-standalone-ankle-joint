@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 11:15:18
- * @LastEditTime: 2023-07-26 14:41:39
+ * @LastEditTime: 2023-07-27 15:58:59
  * @Description : 路由
  */
 import Vue from 'vue'
@@ -148,9 +148,23 @@ const routes = [
         name: 'test-valgus',
         component: () => import('@/views/test-mode/valgus'),
         meta: ['外翻']
-      }
+      },
 
       /* 训练模块 */
+      // 训练参数配置
+      {
+        path: 'train-parameter',
+        name: 'train-parameter',
+        component: () => import('@/views/train-mode/parameter'),
+        meta: ['训练参数配置']
+      },
+      // 跖屈
+      {
+        path: 'train-plantarFlexion',
+        name: 'train-plantarFlexion',
+        component: () => import('@/views/train-mode/plantarFlexion'),
+        meta: ['跖屈']
+      }
 
       /* MTT分阶模块 */
     ]

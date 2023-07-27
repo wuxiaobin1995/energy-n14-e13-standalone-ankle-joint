@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-07-26 18:06:43
+ * @LastEditTime: 2023-07-27 14:37:37
  * @Description : 跖屈
 -->
 <template>
@@ -13,17 +13,17 @@
         <div>实时值：{{ xAngle }}°</div>
         <div>最大值（结果）：{{ maxAngle }}°</div>
 
-        <model-collada
+        <model-stl
           :backgroundColor="0x000000"
-          :backgroundAlpha="0.1"
-          :width="300"
-          :height="300"
+          :backgroundAlpha="0.8"
+          :width="600"
+          :height="400"
           @load="onLoad"
           :rotation="rotation"
           :controlsOptions="{
-            enablePan: false,
-            enableZoom: false,
-            enableRotate: false
+            enablePan: true,
+            enableZoom: true,
+            enableRotate: true
           }"
           :src="modelsSrc"
         />
@@ -59,7 +59,7 @@
 
 <script>
 import { ref } from 'vue'
-import { ModelCollada } from 'vue-3d-model'
+import { ModelStl } from 'vue-3d-model'
 
 /* 路径模块 */
 import path from 'path'
@@ -72,7 +72,7 @@ export default {
   name: 'test-plantarFlexion',
 
   components: {
-    ModelCollada
+    ModelStl
   },
 
   data() {
@@ -98,10 +98,10 @@ export default {
       angleArray: [], // 角度数组
       maxAngle: null, // 最大角度值（结果）
 
-      modelsSrc: path.join(__static, `models/collada/elf/elf.dae`),
-
+      /* 模型相关 */
+      modelsSrc: path.join(__static, `models/Foot.STL`),
       rotation: ref({
-        x: -Math.PI / 2,
+        x: 0,
         y: 0,
         z: 0
       })
@@ -124,8 +124,11 @@ export default {
   },
 
   methods: {
+    /**
+     * @description: 模型更新
+     */
     onLoad() {
-      this.rotation.z = this.xAngle / 10
+      this.rotation.x = (Math.PI * 2) / (360 / this.xAngle)
     },
 
     /**
@@ -208,7 +211,7 @@ export default {
               // const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
               console.log(x)
 
-              this.xAngle = x - this.xStandard
+              this.xAngle = this.xStandard - x
               this.onLoad()
 
               /* 数据校验 */

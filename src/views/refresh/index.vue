@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 11:56:45
- * @LastEditTime: 2023-06-25 11:56:56
+ * @LastEditTime: 2023-07-27 15:45:56
  * @Description : 刷新中转页
 -->
 <template>
