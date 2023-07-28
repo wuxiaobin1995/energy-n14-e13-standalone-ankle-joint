@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-27 09:34:58
- * @LastEditTime: 2023-07-27 16:00:15
+ * @LastEditTime: 2023-07-28 17:32:15
  * @Description : 训练参数配置
 -->
 <template>
@@ -76,6 +76,17 @@
 
           <div class="right">
             <div class="item">
+              <span>选择动作：</span>
+              <el-select v-model="selectTrain" placeholder="请选择动作">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
+            <div class="item">
               <span>重复次数：</span>
               <el-input-number
                 v-model="num"
@@ -131,6 +142,28 @@ export default {
 
   data() {
     return {
+      selectTrain: '跖屈', // 训练动作
+      options: [
+        {
+          value: '跖屈'
+        },
+        {
+          value: '背屈'
+        },
+        {
+          value: '内收'
+        },
+        {
+          value: '外展'
+        },
+        {
+          value: '内翻'
+        },
+        {
+          value: '外翻'
+        }
+      ],
+
       plantarFlexion: 30, // 跖屈
       dorsiflex: 20, // 背屈
       adduction: 25, // 内收
@@ -165,6 +198,8 @@ export default {
       window.sessionStorage.setItem(
         'train-parameter-obj',
         JSON.stringify({
+          selectTrain: this.selectTrain,
+
           plantarFlexion: this.plantarFlexion,
           dorsiflex: this.dorsiflex,
           adduction: this.adduction,
@@ -182,7 +217,7 @@ export default {
       setTimeout(() => {
         this.fullscreenLoading = false
         this.$router.push({
-          path: '/train-plantarFlexion'
+          path: '/train-measure'
         })
       }, 1000)
     }

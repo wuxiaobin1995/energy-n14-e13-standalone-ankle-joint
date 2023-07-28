@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-07-26 15:16:47
+ * @LastEditTime: 2023-07-28 10:41:51
  * @Description : 外翻
 -->
 <template>
@@ -149,7 +149,6 @@ export default {
             })
             /* 调用 this.usbPort.open() 失败时触发（开启串口失败） */
             this.usbPort.on('error', () => {
-              this.$getLogger('串口开启失败')
               this.$alert(
                 `请重新连接USB蓝牙适配器，然后点击"刷新页面"按钮！`,
                 '串口开启失败',

@@ -158,11 +158,11 @@ const routes = [
         component: () => import('@/views/train-mode/parameter'),
         meta: ['训练参数配置']
       },
-      // 跖屈
+      // 具体训练
       {
-        path: 'train-plantarFlexion',
-        name: 'train-plantarFlexion',
-        component: () => import('@/views/train-mode/plantarFlexion'),
+        path: 'train-measure',
+        name: 'train-measure',
+        component: () => import('@/views/train-mode/measure'),
         meta: ['跖屈']
       }
 
