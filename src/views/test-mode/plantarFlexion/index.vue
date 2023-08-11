@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-07-28 10:40:10
+ * @LastEditTime: 2023-08-11 10:41:38
  * @Description : 跖屈
 -->
 <template>
@@ -10,23 +10,31 @@
       <div class="title">踝关节活动度测试 - 跖屈</div>
 
       <div class="content">
-        <div>实时值：{{ xAngle }}°</div>
-        <div>最大值（结果）：{{ maxAngle }}°</div>
+        <div>
+          <model-stl
+            :backgroundColor="0x000000"
+            :backgroundAlpha="0.8"
+            :width="600"
+            :height="400"
+            @load="onLoad"
+            :rotation="rotation"
+            :controlsOptions="{
+              enablePan: false,
+              enableZoom: false,
+              enableRotate: false
+            }"
+            :src="modelsSrc"
+          />
+        </div>
 
-        <model-stl
-          :backgroundColor="0x000000"
-          :backgroundAlpha="0.8"
-          :width="600"
-          :height="400"
-          @load="onLoad"
-          :rotation="rotation"
-          :controlsOptions="{
-            enablePan: true,
-            enableZoom: true,
-            enableRotate: true
-          }"
-          :src="modelsSrc"
-        />
+        <div class="img">
+          <el-image class="item" :src="showImg" fit="scale-down"></el-image>
+        </div>
+
+        <div class="value">
+          <div class="item">实时值：{{ xAngle }}°</div>
+          <div class="item">最大值（结果）：{{ maxAngle }}°</div>
+        </div>
       </div>
 
       <!-- 按钮组 -->
@@ -58,6 +66,7 @@
 </template>
 
 <script>
+/* 模型相关 */
 import { ref } from 'vue'
 import { ModelStl } from 'vue-3d-model'
 
@@ -97,6 +106,8 @@ export default {
 
       angleArray: [], // 角度数组
       maxAngle: null, // 最大角度值（结果）
+
+      showImg: require('@/assets/img/Test/跖屈.png'),
 
       /* 模型相关 */
       modelsSrc: path.join(__static, `models/Foot.STL`),
@@ -208,7 +219,7 @@ export default {
               const x = parseFloat(parseFloat(dataArray[0]).toFixed(0)) // 绕x角度（超越±180°时会减少）
               // const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
               // const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
-              console.log(x)
+              // console.log(x)
 
               this.xAngle = this.xStandard - x
               this.onLoad()
@@ -350,6 +361,18 @@ export default {
 
     .content {
       flex: 1;
+      @include flex(row, space-around, center);
+      .img {
+        .item {
+          width: 80%;
+        }
+      }
+      .value {
+        font-size: 22px;
+        .item {
+          margin: 20px 0;
+        }
+      }
     }
 
     /* 按钮组 */

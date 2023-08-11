@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-25 15:38:27
- * @LastEditTime: 2023-07-27 09:42:40
+ * @LastEditTime: 2023-08-09 09:37:42
  * @Description : 测试介绍
 -->
 <template>
@@ -18,6 +18,10 @@
         测试踝关节：跖屈、背屈、内收、外展、内翻、外翻的活动度是否处于正常范围
       </div>
 
+      <div class="img">
+        <el-image :src="showImg" fit="scale-down"></el-image>
+      </div>
+
       <!-- 按钮组 -->
       <div class="btn">
         <el-button class="item" type="success" @click="handleStart"
@@ -31,6 +35,12 @@
 <script>
 export default {
   name: 'test-introduce',
+
+  data() {
+    return {
+      showImg: require('@/assets/img/Test/示意图.png') // 示意图
+    }
+  },
 
   created() {
     window.sessionStorage.setItem('test-angleArray', JSON.stringify([]))
@@ -81,9 +91,13 @@ export default {
     }
 
     .content {
-      flex: 1;
       margin-top: 35px;
       font-size: 30px;
+    }
+
+    .img {
+      flex: 1;
+      @include flex(row, center, center);
     }
 
     /* 按钮组 */

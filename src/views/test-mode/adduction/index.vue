@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-07-28 10:41:22
+ * @LastEditTime: 2023-08-11 14:21:12
  * @Description : 内收
 -->
 <template>
@@ -10,8 +10,31 @@
       <div class="title">踝关节活动度测试 - 内收</div>
 
       <div class="content">
-        <div>实时值：{{ xAngle }}°</div>
-        <div>最大值：{{ maxAngle }}°</div>
+        <div>
+          <model-stl
+            :backgroundColor="0x000000"
+            :backgroundAlpha="0.8"
+            :width="600"
+            :height="400"
+            @load="onLoad"
+            :rotation="rotation"
+            :controlsOptions="{
+              enablePan: false,
+              enableZoom: false,
+              enableRotate: false
+            }"
+            :src="modelsSrc"
+          />
+        </div>
+
+        <div class="img">
+          <el-image class="item" :src="showImg" fit="scale-down"></el-image>
+        </div>
+
+        <div class="value">
+          <div class="item">实时值：{{ zAngle }}°</div>
+          <div class="item">最大值（结果）：{{ maxAngle }}°</div>
+        </div>
       </div>
 
       <!-- 按钮组 -->
@@ -43,12 +66,23 @@
 </template>
 
 <script>
+/* 模型相关 */
+import { ref } from 'vue'
+import { ModelStl } from 'vue-3d-model'
+
+/* 路径模块 */
+import path from 'path'
+
 /* 串口通信库 */
 import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
 
 export default {
   name: 'test-adduction',
+
+  components: {
+    ModelStl
+  },
 
   data() {
     return {
@@ -71,7 +105,17 @@ export default {
       zAngle: null,
 
       angleArray: [], // 角度数组
-      maxAngle: null // 最大角度值（结果）
+      maxAngle: null, // 最大角度值（结果）
+
+      showImg: require('@/assets/img/Test/内收.png'),
+
+      /* 模型相关 */
+      modelsSrc: path.join(__static, `models/Foot.STL`),
+      rotation: ref({
+        x: Math.PI / 2,
+        y: 0,
+        z: 0
+      })
     }
   },
 
@@ -91,6 +135,13 @@ export default {
   },
 
   methods: {
+    /**
+     * @description: 模型更新
+     */
+    onLoad() {
+      this.rotation.y = (Math.PI * 2) / (360 / this.zAngle)
+    },
+
     /**
      * @description: 回到首页
      */
@@ -168,18 +219,19 @@ export default {
               // const x = parseFloat(parseFloat(dataArray[0]).toFixed(0)) // 绕x角度（超越±180°时会减少）
               // const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
               const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
-              console.log(z)
+              // console.log(z)
 
-              this.xAngle = Math.abs(z - this.zStandard)
+              this.zAngle = Math.abs(z - this.zStandard)
+              this.onLoad()
 
               /* 数据校验 */
-              if (!isNaN(this.xAngle)) {
+              if (!isNaN(this.zAngle)) {
                 // 防止内存溢出
                 if (this.angleArray.length >= 1000) {
                   this.usbPort.write('N')
                 }
 
-                this.angleArray.push(this.xAngle)
+                this.angleArray.push(this.zAngle)
                 this.maxAngle = Math.max(...this.angleArray)
               }
             })
@@ -309,6 +361,18 @@ export default {
 
     .content {
       flex: 1;
+      @include flex(row, space-around, center);
+      .img {
+        .item {
+          width: 80%;
+        }
+      }
+      .value {
+        font-size: 22px;
+        .item {
+          margin: 20px 0;
+        }
+      }
     }
 
     /* 按钮组 */
