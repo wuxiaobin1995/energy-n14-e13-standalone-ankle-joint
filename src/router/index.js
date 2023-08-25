@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 11:15:18
- * @LastEditTime: 2023-08-11 15:09:58
+ * @LastEditTime: 2023-08-23 10:25:24
  * @Description : 路由
  */
 import Vue from 'vue'
@@ -107,47 +107,89 @@ const routes = [
         component: () => import('@/views/test-mode/introduce'),
         meta: ['测试介绍']
       },
-      // 跖屈
+      // 跖屈-左
       {
-        path: 'test-plantarFlexion',
-        name: 'test-plantarFlexion',
-        component: () => import('@/views/test-mode/plantarFlexion'),
-        meta: ['跖屈']
+        path: 'test-plantarFlexion-left',
+        name: 'test-plantarFlexion-left',
+        component: () => import('@/views/test-mode/left/plantarFlexion'),
+        meta: ['跖屈-左']
       },
-      // 背屈
+      // 背屈-左
       {
-        path: 'test-dorsiflex',
-        name: 'test-dorsiflex',
-        component: () => import('@/views/test-mode/dorsiflex'),
-        meta: ['背屈']
+        path: 'test-dorsiflex-left',
+        name: 'test-dorsiflex-left',
+        component: () => import('@/views/test-mode/left/dorsiflex'),
+        meta: ['背屈-左']
       },
-      // 内收
+      // 内收-左
       {
-        path: 'test-adduction',
-        name: 'test-adduction',
-        component: () => import('@/views/test-mode/adduction'),
-        meta: ['内收']
+        path: 'test-adduction-left',
+        name: 'test-adduction-left',
+        component: () => import('@/views/test-mode/left/adduction'),
+        meta: ['内收-左']
       },
-      // 外展
+      // 外展-左
       {
-        path: 'test-abduction',
-        name: 'test-abduction',
-        component: () => import('@/views/test-mode/abduction'),
-        meta: ['外展']
+        path: 'test-abduction-left',
+        name: 'test-abduction-left',
+        component: () => import('@/views/test-mode/left/abduction'),
+        meta: ['外展-左']
       },
-      // 内翻
+      // 内翻-左
       {
-        path: 'test-varus',
-        name: 'test-varus',
-        component: () => import('@/views/test-mode/varus'),
-        meta: ['内翻']
+        path: 'test-varus-left',
+        name: 'test-varus-left',
+        component: () => import('@/views/test-mode/left/varus'),
+        meta: ['内翻-左']
       },
-      // 外翻
+      // 外翻-左
       {
-        path: 'test-valgus',
-        name: 'test-valgus',
-        component: () => import('@/views/test-mode/valgus'),
-        meta: ['外翻']
+        path: 'test-valgus-left',
+        name: 'test-valgus-left',
+        component: () => import('@/views/test-mode/left/valgus'),
+        meta: ['外翻-左']
+      },
+      // 跖屈-右
+      {
+        path: 'test-plantarFlexion-right',
+        name: 'test-plantarFlexion-right',
+        component: () => import('@/views/test-mode/right/plantarFlexion'),
+        meta: ['跖屈-右']
+      },
+      // 背屈-右
+      {
+        path: 'test-dorsiflex-right',
+        name: 'test-dorsiflex-right',
+        component: () => import('@/views/test-mode/right/dorsiflex'),
+        meta: ['背屈-右']
+      },
+      // 内收-右
+      {
+        path: 'test-adduction-right',
+        name: 'test-adduction-right',
+        component: () => import('@/views/test-mode/right/adduction'),
+        meta: ['内收-右']
+      },
+      // 外展-右
+      {
+        path: 'test-abduction-right',
+        name: 'test-abduction-right',
+        component: () => import('@/views/test-mode/right/abduction'),
+        meta: ['外展-右']
+      },
+      // 内翻-右
+      {
+        path: 'test-varus-right',
+        name: 'test-varus-right',
+        component: () => import('@/views/test-mode/right/varus'),
+        meta: ['内翻-右']
+      },
+      // 外翻-右
+      {
+        path: 'test-valgus-right',
+        name: 'test-valgus-right',
+        component: () => import('@/views/test-mode/right/valgus'),
+        meta: ['外翻-右']
       },
 
       /* 训练模块 */
@@ -164,9 +206,28 @@ const routes = [
         name: 'train-measure',
         component: () => import('@/views/train-mode/measure'),
         meta: ['跖屈']
-      }
+      },
 
       /* MTT分阶模块 */
+
+      /* 数据记录 */
+      // 测试
+      {
+        path: 'test-record',
+        name: 'test-record',
+        component: () => import('@/views/record/test'),
+        meta: ['测试-数据记录'],
+        redirect: '/test-record/activity',
+        children: [
+          // 踝关节活动度测试
+          {
+            path: 'activity',
+            name: 'activity',
+            component: () => import('@/views/record/test/activity'),
+            meta: ['踝关节活动度测试']
+          }
+        ]
+      }
     ]
   },
 

@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-06-23 09:06:38
- * @LastEditTime: 2023-07-28 14:46:09
+ * @LastEditTime: 2023-08-22 09:09:15
  * @Description : home
 -->
 <template>
@@ -16,12 +16,12 @@
         ></el-image>
       </div>
       <div class="one">
-        <el-image
-          class="item item3"
-          :src="src3"
+        <!-- <el-image
+          class="item item4"
+          :src="src4"
           fit="scale-down"
-          @click.native="handleClick('src3')"
-        ></el-image>
+          @click.native="handleClick('src4')"
+        ></el-image> -->
       </div>
       <div class="two">
         <el-image
@@ -31,10 +31,10 @@
           @click.native="handleClick('src2')"
         ></el-image>
         <el-image
-          class="item item4"
-          :src="src4"
+          class="item item3"
+          :src="src3"
           fit="scale-down"
-          @click.native="handleClick('src4')"
+          @click.native="handleClick('src3')"
         ></el-image>
       </div>
       <div class="three">
@@ -74,7 +74,7 @@
       </el-dialog>
 
       <!-- 语音相关 -->
-      <div class="audio-control">
+      <!-- <div class="audio-control">
         <div class="title">语音功能</div>
         <el-switch
           v-model="switchValue"
@@ -83,10 +83,10 @@
           @change="handleSwitchChange"
         >
         </el-switch>
-      </div>
+      </div> -->
 
       <!-- 免责声明 -->
-      <div class="disclaimer">
+      <!-- <div class="disclaimer">
         <el-button
           type="danger"
           size="small"
@@ -94,7 +94,7 @@
           @click="dialogVisible = true"
           >用 户 告 知</el-button
         >
-      </div>
+      </div> -->
       <el-dialog
         title="用户告知"
         :visible.sync="dialogVisible"
@@ -292,14 +292,14 @@ export default {
             .catch(() => {})
         }
       } else if (src === 'src4') {
-        this.$confirm(`请连接对应机械部分！`, '提示', {
-          type: 'warning',
-          center: true,
-          showCancelButton: false,
-          confirmButtonText: '确 定'
-        })
-          .then(() => {})
-          .catch(() => {})
+        // this.$confirm(`请连接对应机械部分！`, '提示', {
+        //   type: 'warning',
+        //   center: true,
+        //   showCancelButton: false,
+        //   confirmButtonText: '确 定'
+        // })
+        //   .then(() => {})
+        //   .catch(() => {})
       } else if (src === 'src5') {
         if (this.$store.state.currentUserInfo.userId) {
           this.centerDialogVisible = true
@@ -410,7 +410,7 @@ export default {
       bottom: 20px;
     }
     .one {
-      margin-top: 30px;
+      margin-top: 100px;
       @include flex(row, center, center);
       // .item3 {
       //   margin-right: 70px;
@@ -426,7 +426,7 @@ export default {
       }
     }
     .three {
-      margin-top: 50px;
+      margin-top: 80px;
       @include flex(row, center, center);
       .item1 {
         margin-right: 420px;

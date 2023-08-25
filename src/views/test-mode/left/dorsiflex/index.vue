@@ -1,52 +1,99 @@
 <!--
  * @Author      : Mr.bin
- * @Date        : 2023-07-27 15:59:39
- * @LastEditTime: 2023-08-16 08:37:20
- * @Description : 具体训练
+ * @Date        : 2023-07-26 10:22:31
+ * @LastEditTime: 2023-08-22 14:43:53
+ * @Description : 背屈-左
 -->
 <template>
-  <div class="train-measure">
+  <div class="test-dorsiflex-left">
     <div class="wrapper">
-      <el-page-header
-        class="page"
-        title="返回上一页"
-        :content="parameter.selectTrain"
-        @back="handleBack"
-      ></el-page-header>
+      <div class="title">踝关节活动度测试 - 背屈（左）</div>
 
-      <div class="chart">
-        <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
+      <div class="content">
+        <div>
+          <model-stl
+            :backgroundColor="0x000000"
+            :backgroundAlpha="0.8"
+            :width="600"
+            :height="400"
+            @load="onLoad"
+            :rotation="rotation"
+            :controlsOptions="{
+              enablePan: false,
+              enableZoom: false,
+              enableRotate: false
+            }"
+            :src="modelsSrc"
+          />
+        </div>
+
+        <div class="img">
+          <el-image class="item" :src="showImg" fit="scale-down"></el-image>
+        </div>
+
+        <div class="value">
+          <div class="item">实时值：{{ xAngle }}°</div>
+          <div class="item">最大值（结果）：{{ maxAngle }}°</div>
+        </div>
       </div>
 
+      <!-- 按钮组 -->
       <div class="btn">
-        <el-button class="item" type="primary">开始训练</el-button>
+        <el-button
+          class="item"
+          type="success"
+          @click="handleStart"
+          :disabled="isStarting"
+          >开始测量</el-button
+        >
+        <el-button
+          class="item"
+          type="danger"
+          @click="handleFinish"
+          :disabled="!isStarting || isFinished"
+          >结束测量</el-button
+        >
+        <el-button
+          class="item"
+          type="primary"
+          @click="handleNext"
+          :disabled="!isFinished"
+          >下一项</el-button
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script>
+/* 模型相关 */
+import { ref } from 'vue'
+import { ModelStl } from 'vue-3d-model'
+
+/* 路径模块 */
+import path from 'path'
+
 /* 串口通信库 */
 import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
 
 export default {
-  name: 'train-measure',
+  name: 'test-dorsiflex-left',
+
+  components: {
+    ModelStl
+  },
 
   data() {
     return {
-      /* 配置参数 */
-      parameter: {},
+      /* 按钮控制 */
+      isStarting: false, // 是否开始
+      isFinished: false, // 是否完成
 
       /* 串口相关 */
       usbPort: null,
       parser: null,
       scmBaudRate: 115200,
-
-      /* 图形相关变量 */
-      myChart: null,
-      option: {},
-      xData: [], // 横坐标数组
 
       /* 其他 */
       xStandard: null,
@@ -57,33 +104,27 @@ export default {
       yAngle: null,
       zAngle: null,
 
-      angleDataOneArray: [], // 单个的角度数组，用于计算次数
-      angleDataShowArray: [], // 展示的角度数组
-      angleDataArray: [], // 完整的角度数组
+      angleArray: [], // 角度数组
+      maxAngle: null, // 最大角度值（结果）
 
-      nowNum: 0, // 目前的次数
-      pdfTime: null, // 该次训练完成时间
-      resultRate: 0, // 最终完成比例
+      showImg: require('@/assets/img/Test/背屈-左.png'),
 
-      /* 参考曲线 */
-      standardGraph: [], // 单个基准图形
-      referenceGraph: [] // 最终图形
+      /* 模型相关 */
+      modelsSrc: path.join(__static, `models/Foot.STL`),
+      rotation: ref({
+        x: 0,
+        y: 0,
+        z: 0
+      })
     }
   },
 
   created() {
-    this.parameter = JSON.parse(
-      window.sessionStorage.getItem('train-parameter-obj')
-    )
-
     this.xStandard = this.$store.state.zeroStandard.xStandard
     this.yStandard = this.$store.state.zeroStandard.yStandard
     this.zStandard = this.$store.state.zeroStandard.zStandard
 
     this.initSerialPort()
-  },
-  mounted() {
-    this.initChart()
   },
   beforeDestroy() {
     if (this.usbPort) {
@@ -95,11 +136,18 @@ export default {
 
   methods: {
     /**
-     * @description: 回到上一页
+     * @description: 模型更新
      */
-    handleBack() {
+    onLoad() {
+      this.rotation.x = -(Math.PI * 2) / (360 / this.xAngle)
+    },
+
+    /**
+     * @description: 回到首页
+     */
+    handleToHome() {
       this.$router.push({
-        path: '/train-parameter'
+        path: '/home'
       })
     },
 
@@ -110,7 +158,7 @@ export default {
       this.$router.push({
         path: '/refresh',
         query: {
-          routerName: JSON.stringify('/train-measure'),
+          routerName: JSON.stringify('/test-dorsiflex-left'),
           duration: JSON.stringify(300)
         }
       })
@@ -143,7 +191,9 @@ export default {
               autoOpen: false // 是否自动开启串口
             })
             /* 调用 this.usbPort.open() 成功时触发（开启串口成功） */
-            this.usbPort.on('open', () => {})
+            this.usbPort.on('open', () => {
+              this.isStarting = true
+            })
             /* 调用 this.usbPort.open() 失败时触发（开启串口失败） */
             this.usbPort.on('error', () => {
               this.$alert(
@@ -169,18 +219,20 @@ export default {
               const x = parseFloat(parseFloat(dataArray[0]).toFixed(0)) // 绕x角度（超越±180°时会减少）
               // const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
               // const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
-              console.log(x)
+              // console.log(x)
 
-              this.xAngle = this.xStandard - x
+              this.xAngle = x - this.xStandard
+              this.onLoad()
 
               /* 数据校验 */
               if (!isNaN(this.xAngle)) {
-                this.angleDataOneArray.push(this.xAngle) // 单个的角度数组，用于计算次数
-                this.angleDataShowArray.push(this.xAngle) // 展示的角度数组
-                this.angleDataArray.push(this.xAngle) // 完整的角度数组
+                // 防止内存溢出
+                if (this.angleArray.length >= 1000) {
+                  this.usbPort.write('N')
+                }
 
-                this.option.series[0].data = this.angleDataShowArray
-                this.myChart.setOption(this.option)
+                this.angleArray.push(this.xAngle)
+                this.maxAngle = Math.max(...this.angleArray)
               }
             })
           } else {
@@ -202,7 +254,7 @@ export default {
                 this.handleRefresh()
               })
               .catch(() => {
-                this.handleBack()
+                this.handleToHome()
               })
           }
         })
@@ -225,132 +277,111 @@ export default {
               this.handleRefresh()
             })
             .catch(() => {
-              this.handleBack()
+              this.handleToHome()
             })
         })
     },
 
     /**
-     * @description: 图形初始化
+     * @description: 开始测量
      */
-    initChart() {
-      /* 计算最终参考图形 */
-      const original = 2 // 最低点°
-      const time = 1 // 间隔时长s
-      const maxDistance = this.parameter.plantarFlexion // 最高点°
-      // 开始段
-      for (let i = 0; i <= time * 5; i++) {
-        this.standardGraph.push(original)
-      }
-      // 中间段，这里的15目前是固定的，后续可能会改其他值
-      const intervalUp =
-        (maxDistance - original) / (this.parameter.entadRate * 15) // 上升间隔值
-      const intervalDown =
-        (maxDistance - original) / (this.parameter.offcenterRate * 15) // 下降间隔值
-      let sum = original
-      for (let i = 0; i < this.parameter.entadRate * 15; i++) {
-        sum = parseFloat(sum + intervalUp)
-        this.standardGraph.push(sum)
-      }
-      for (let i = 0; i < this.parameter.keepdRate * 15; i++) {
-        this.standardGraph.push(sum)
-      }
-      for (let i = 0; i < this.parameter.offcenterRate * 15 - 1; i++) {
-        sum = parseFloat(sum - intervalDown)
-        this.standardGraph.push(sum)
-      }
-      // 结束段
-      for (let i = 0; i < time * 5; i++) {
-        this.standardGraph.push(original)
-      }
-      // 最终复制3个
-      for (let i = 0; i < 3; i++) {
-        this.referenceGraph.push(...this.standardGraph)
+    handleStart() {
+      this.angleArray = []
+
+      if (this.usbPort) {
+        if (!this.usbPort.isOpen) {
+          this.usbPort.open()
+        }
       }
 
-      // 计算横坐标数组
-      this.xData = []
-      for (let i = 0; i < this.referenceGraph.length; i++) {
-        this.xData.push(parseFloat((i * 0.1).toFixed(1)))
-      }
+      this.usbPort.write('Y')
+    },
 
-      this.myChart = this.$echarts.init(document.getElementById('chart'))
-      this.option = {
-        xAxis: {
-          type: 'category',
-          name: '单位：秒',
-          data: this.xData,
-          axisTick: {
-            alignWithLabel: true
-          }
-        },
-        yAxis: {
-          type: 'value',
-          name: '单位：度',
-          min: 0
-        },
-        series: [
-          {
-            data: [],
-            type: 'line',
-            lineStyle: {
-              color: 'rgba(255, 0, 0, 1)'
-            },
-            smooth: true,
-            showSymbol: false
-          },
-          {
-            data: this.referenceGraph,
-            type: 'line',
-            smooth: false,
-            showSymbol: false,
-            lineStyle: {
-              // width: 40,
-              opacity: 0.8
-              // join: 'miter'
-            }
-          }
-        ],
-        animation: false
-      }
+    /**
+     * @description: 结束测量
+     */
+    handleFinish() {
+      this.saveData()
+    },
 
-      this.myChart.setOption(this.option)
+    /**
+     * @description: 下一项
+     */
+    handleNext() {
+      this.$router.push({
+        path: '/test-adduction-left'
+      })
+    },
+
+    /**
+     * @description: 数据缓存
+     */
+    saveData() {
+      this.usbPort.write('N')
+
+      let resultArray = JSON.parse(
+        window.sessionStorage.getItem('test-angleArray')
+      )
+      resultArray.push(this.maxAngle)
+      window.sessionStorage.setItem(
+        'test-angleArray',
+        JSON.stringify(resultArray)
+      )
+
+      this.isFinished = true
+
+      this.$message({
+        message: '完成，请点击下一项',
+        type: 'success',
+        duration: 2500
+      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.train-measure {
+.test-dorsiflex-left {
   width: 100%;
   height: 100%;
   @include flex(row, center, center);
 
   .wrapper {
-    width: 96%;
-    height: 96%;
-    border-radius: 20px;
+    width: 86%;
+    height: 90%;
+    border-radius: 34px;
     background-color: #ffffff;
     box-shadow: 0 0 10px #929292;
-    padding: 40px 20px;
-    position: relative;
+    padding: 26px 40px;
     @include flex(column, stretch, stretch);
 
-    .page {
-      position: absolute;
-      top: 20px;
-      left: 30px;
+    .title {
+      font-size: 30px;
     }
 
-    .chart {
+    .content {
       flex: 1;
-      width: 100%;
+      @include flex(row, space-around, center);
+      .img {
+        .item {
+          width: 80%;
+        }
+      }
+      .value {
+        font-size: 22px;
+        .item {
+          margin: 20px 0;
+        }
+      }
     }
 
+    /* 按钮组 */
     .btn {
-      @include flex(column, flex-end, center);
+      margin-bottom: 10px;
+      @include flex(row, center, center);
       .item {
-        width: 190px;
+        font-size: 22px;
+        margin: 0 60px;
       }
     }
   }

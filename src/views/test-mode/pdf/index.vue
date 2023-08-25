@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 15:17:22
- * @LastEditTime: 2023-08-11 17:22:10
+ * @LastEditTime: 2023-08-23 10:19:32
  * @Description : 踝关节活动度测试-PDF报告
 -->
 <template>
@@ -26,41 +26,113 @@
       </div>
 
       <div class="main">
-        <table border="1" class="table">
-          <tr :style="{ height: '80px' }" bgcolor="#E7E6E6" align="center">
+        <table border="2" class="table">
+          <tr :style="{ height: '60px' }" bgcolor="#E7E6E6" align="center">
             <th>测试部位</th>
             <th>最大活动角度°</th>
             <th>参考范围</th>
+            <th>双侧差异</th>
           </tr>
-          <tr :style="{ height: '60px' }" align="center">
-            <td>跖屈</td>
+          <tr align="center">
+            <td>左跖屈</td>
             <td>{{ pdfData.angleResultArray[0] }}</td>
-            <td>40°~50°</td>
+            <td rowspan="2">40°~50°</td>
+            <td rowspan="2">
+              {{
+                Math.abs(
+                  pdfData.angleResultArray[0] - pdfData.angleResultArray[6]
+                )
+              }}
+            </td>
           </tr>
-          <tr :style="{ height: '60px' }" align="center">
-            <td>背屈</td>
+          <tr align="center">
+            <td>右跖屈</td>
+            <td>{{ pdfData.angleResultArray[6] }}</td>
+          </tr>
+
+          <tr align="center">
+            <td>左背屈</td>
             <td>{{ pdfData.angleResultArray[1] }}</td>
-            <td>20°~30°</td>
+            <td rowspan="2">20°~30°</td>
+            <td rowspan="2">
+              {{
+                Math.abs(
+                  pdfData.angleResultArray[1] - pdfData.angleResultArray[7]
+                )
+              }}
+            </td>
           </tr>
-          <tr :style="{ height: '60px' }" align="center">
-            <td>内收</td>
+          <tr align="center">
+            <td>右背屈</td>
+            <td>{{ pdfData.angleResultArray[7] }}</td>
+          </tr>
+
+          <tr align="center">
+            <td>左内收</td>
             <td>{{ pdfData.angleResultArray[2] }}</td>
-            <td>20°~30°</td>
+            <td rowspan="2">20°~30°</td>
+            <td rowspan="2">
+              {{
+                Math.abs(
+                  pdfData.angleResultArray[2] - pdfData.angleResultArray[8]
+                )
+              }}
+            </td>
           </tr>
-          <tr :style="{ height: '60px' }" align="center">
-            <td>外展</td>
+          <tr align="center">
+            <td>右内收</td>
+            <td>{{ pdfData.angleResultArray[8] }}</td>
+          </tr>
+
+          <tr align="center">
+            <td>左外展</td>
             <td>{{ pdfData.angleResultArray[3] }}</td>
-            <td>5°~10°</td>
+            <td rowspan="2">5°~10°</td>
+            <td rowspan="2">
+              {{
+                Math.abs(
+                  pdfData.angleResultArray[3] - pdfData.angleResultArray[9]
+                )
+              }}
+            </td>
           </tr>
-          <tr :style="{ height: '60px' }" align="center">
-            <td>内翻</td>
+          <tr align="center">
+            <td>右外展</td>
+            <td>{{ pdfData.angleResultArray[9] }}</td>
+          </tr>
+
+          <tr align="center">
+            <td>左内翻</td>
             <td>{{ pdfData.angleResultArray[4] }}</td>
-            <td>20°~30°</td>
+            <td rowspan="2">20°~30°</td>
+            <td rowspan="2">
+              {{
+                Math.abs(
+                  pdfData.angleResultArray[4] - pdfData.angleResultArray[10]
+                )
+              }}
+            </td>
           </tr>
-          <tr :style="{ height: '60px' }" align="center">
-            <td>外翻</td>
+          <tr align="center">
+            <td>右内翻</td>
+            <td>{{ pdfData.angleResultArray[10] }}</td>
+          </tr>
+
+          <tr align="center">
+            <td>左外翻</td>
             <td>{{ pdfData.angleResultArray[5] }}</td>
-            <td>20°~30°</td>
+            <td rowspan="2">20°~30°</td>
+            <td rowspan="2">
+              {{
+                Math.abs(
+                  pdfData.angleResultArray[5] - pdfData.angleResultArray[11]
+                )
+              }}
+            </td>
+          </tr>
+          <tr align="center">
+            <td>右外翻</td>
+            <td>{{ pdfData.angleResultArray[11] }}</td>
           </tr>
         </table>
       </div>
@@ -139,7 +211,7 @@ export default {
         })
         .toArray()
         .then(res => {
-          console.log(res)
+          // console.log(res)
           this.pdfData = res[0]
         })
         .catch(err => {
@@ -213,9 +285,10 @@ export default {
     .main {
       flex: 1;
       @include flex(column, center, center);
+      margin-top: 10px;
       .table {
         width: 70%;
-        font-size: 30px;
+        font-size: 26px;
       }
     }
   }

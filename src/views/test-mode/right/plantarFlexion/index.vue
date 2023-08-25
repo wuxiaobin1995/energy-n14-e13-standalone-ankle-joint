@@ -1,13 +1,13 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-08-11 10:41:38
- * @Description : 跖屈
+ * @LastEditTime: 2023-08-22 09:55:32
+ * @Description : 跖屈-右
 -->
 <template>
-  <div class="test-plantarFlexion">
+  <div class="test-plantarFlexion-right">
     <div class="wrapper">
-      <div class="title">踝关节活动度测试 - 跖屈</div>
+      <div class="title">踝关节活动度测试 - 跖屈（右）</div>
 
       <div class="content">
         <div>
@@ -78,7 +78,7 @@ import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
 
 export default {
-  name: 'test-plantarFlexion',
+  name: 'test-plantarFlexion-right',
 
   components: {
     ModelStl
@@ -107,7 +107,7 @@ export default {
       angleArray: [], // 角度数组
       maxAngle: null, // 最大角度值（结果）
 
-      showImg: require('@/assets/img/Test/跖屈.png'),
+      showImg: require('@/assets/img/Test/跖屈-右.png'),
 
       /* 模型相关 */
       modelsSrc: path.join(__static, `models/Foot.STL`),
@@ -158,7 +158,7 @@ export default {
       this.$router.push({
         path: '/refresh',
         query: {
-          routerName: JSON.stringify('/test-plantarFlexion'),
+          routerName: JSON.stringify('/test-plantarFlexion-right'),
           duration: JSON.stringify(300)
         }
       })
@@ -309,7 +309,7 @@ export default {
      */
     handleNext() {
       this.$router.push({
-        path: '/test-dorsiflex'
+        path: '/test-dorsiflex-right'
       })
     },
 
@@ -341,7 +341,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.test-plantarFlexion {
+.test-plantarFlexion-right {
   width: 100%;
   height: 100%;
   @include flex(row, center, center);

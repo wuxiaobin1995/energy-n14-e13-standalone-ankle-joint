@@ -1,13 +1,13 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-08-11 14:21:12
- * @Description : 内收
+ * @LastEditTime: 2023-08-22 14:44:51
+ * @Description : 外翻-右
 -->
 <template>
-  <div class="test-adduction">
+  <div class="test-valgus-right">
     <div class="wrapper">
-      <div class="title">踝关节活动度测试 - 内收</div>
+      <div class="title">踝关节活动度测试 - 外翻（右）</div>
 
       <div class="content">
         <div>
@@ -19,9 +19,9 @@
             @load="onLoad"
             :rotation="rotation"
             :controlsOptions="{
-              enablePan: false,
-              enableZoom: false,
-              enableRotate: false
+              enablePan: true,
+              enableZoom: true,
+              enableRotate: true
             }"
             :src="modelsSrc"
           />
@@ -32,7 +32,7 @@
         </div>
 
         <div class="value">
-          <div class="item">实时值：{{ zAngle }}°</div>
+          <div class="item">实时值：{{ yAngle }}°</div>
           <div class="item">最大值（结果）：{{ maxAngle }}°</div>
         </div>
       </div>
@@ -56,9 +56,9 @@
         <el-button
           class="item"
           type="primary"
-          @click="handleNext"
+          @click="handlePdf"
           :disabled="!isFinished"
-          >下一项</el-button
+          >查看报告</el-button
         >
       </div>
     </div>
@@ -77,8 +77,11 @@ import path from 'path'
 import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
 
+/* 数据库 */
+import { initDB } from '@/db/index.js'
+
 export default {
-  name: 'test-adduction',
+  name: 'test-valgus-right',
 
   components: {
     ModelStl
@@ -107,15 +110,17 @@ export default {
       angleArray: [], // 角度数组
       maxAngle: null, // 最大角度值（结果）
 
-      showImg: require('@/assets/img/Test/内收.png'),
+      showImg: require('@/assets/img/Test/外翻-右.png'),
 
       /* 模型相关 */
       modelsSrc: path.join(__static, `models/Foot.STL`),
       rotation: ref({
-        x: Math.PI / 2,
-        y: 0,
+        x: 0,
+        y: Math.PI / 2,
         z: 0
-      })
+      }),
+
+      pdfTime: ''
     }
   },
 
@@ -139,7 +144,7 @@ export default {
      * @description: 模型更新
      */
     onLoad() {
-      this.rotation.y = (Math.PI * 2) / (360 / this.zAngle)
+      this.rotation.z = -(Math.PI * 2) / (360 / this.yAngle)
     },
 
     /**
@@ -158,7 +163,7 @@ export default {
       this.$router.push({
         path: '/refresh',
         query: {
-          routerName: JSON.stringify('/test-adduction'),
+          routerName: JSON.stringify('/test-valgus-right'),
           duration: JSON.stringify(300)
         }
       })
@@ -217,21 +222,21 @@ export default {
               const dataArray = data.split(',')
 
               // const x = parseFloat(parseFloat(dataArray[0]).toFixed(0)) // 绕x角度（超越±180°时会减少）
-              // const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
-              const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
-              // console.log(z)
+              const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
+              // const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
+              // console.log(y)
 
-              this.zAngle = Math.abs(z - this.zStandard)
+              this.yAngle = Math.abs(y - this.yStandard)
               this.onLoad()
 
               /* 数据校验 */
-              if (!isNaN(this.zAngle)) {
+              if (!isNaN(this.yAngle)) {
                 // 防止内存溢出
                 if (this.angleArray.length >= 1000) {
                   this.usbPort.write('N')
                 }
 
-                this.angleArray.push(this.zAngle)
+                this.angleArray.push(this.yAngle)
                 this.maxAngle = Math.max(...this.angleArray)
               }
             })
@@ -305,11 +310,16 @@ export default {
     },
 
     /**
-     * @description: 下一项
+     * @description: 查看报告
      */
-    handleNext() {
+    handlePdf() {
       this.$router.push({
-        path: '/test-abduction'
+        path: '/test-pdf',
+        query: {
+          userId: JSON.stringify(this.$store.state.currentUserInfo.userId),
+          pdfTime: JSON.stringify(this.pdfTime),
+          routerName: JSON.stringify('/test-introduce')
+        }
       })
     },
 
@@ -328,20 +338,54 @@ export default {
         JSON.stringify(resultArray)
       )
 
-      this.isFinished = true
+      /* 保存到数据库 */
+      this.pdfTime = this.$moment().format('YYYY-MM-DD HH:mm:ss')
+      const hospital = window.localStorage.getItem('hospital')
+      const db = initDB()
+      db.test_data
+        .add({
+          hospital: hospital,
+          userId: this.$store.state.currentUserInfo.userId,
+          userName: this.$store.state.currentUserInfo.userName,
+          sex: this.$store.state.currentUserInfo.sex,
+          affectedSide: this.$store.state.currentUserInfo.affectedSide,
+          height: this.$store.state.currentUserInfo.height,
+          weight: this.$store.state.currentUserInfo.weight,
+          birthday: this.$store.state.currentUserInfo.birthday,
 
-      this.$message({
-        message: '完成，请点击下一项',
-        type: 'success',
-        duration: 2500
-      })
+          pdfTime: this.pdfTime,
+
+          angleResultArray: resultArray,
+          type: '踝关节活动度测试'
+        })
+        .then(() => {
+          this.$message({
+            message: '数据保存成功，请查看报告',
+            type: 'success',
+            duration: 1500
+          })
+        })
+        .then(() => {
+          this.isFinished = true
+        })
+        .catch(() => {
+          this.$alert(`请点击"返回首页"按钮，然后重新测试！`, '数据保存失败', {
+            type: 'error',
+            showClose: false,
+            center: true,
+            confirmButtonText: '返回首页',
+            callback: () => {
+              this.handleToHome()
+            }
+          })
+        })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.test-adduction {
+.test-valgus-right {
   width: 100%;
   height: 100%;
   @include flex(row, center, center);

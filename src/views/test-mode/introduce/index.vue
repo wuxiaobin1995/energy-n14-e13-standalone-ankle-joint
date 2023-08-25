@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-25 15:38:27
- * @LastEditTime: 2023-08-09 09:37:42
+ * @LastEditTime: 2023-08-22 09:59:54
  * @Description : 测试介绍
 -->
 <template>
@@ -61,7 +61,7 @@ export default {
      */
     handleStart() {
       this.$router.push({
-        path: '/test-plantarFlexion'
+        path: '/test-plantarFlexion-left'
       })
     }
   }

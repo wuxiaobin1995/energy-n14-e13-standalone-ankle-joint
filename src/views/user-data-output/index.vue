@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 21:29:20
- * @LastEditTime: 2023-06-25 21:34:17
+ * @LastEditTime: 2023-08-22 09:17:03
  * @Description : 导出所选用户的数据（测试、训练、......）
 -->
 <template>
@@ -78,13 +78,13 @@
           @click="handleTrainOutput"
           >导出-训练</el-button
         >
-        <el-button
+        <!-- <el-button
           class="item"
           type="primary"
           icon="el-icon-download"
           @click="handleMttOutput"
           >导出-mtt分阶</el-button
-        >
+        > -->
         <el-button class="item" type="info" @click="handleRefresh"
           >刷 新</el-button
         >

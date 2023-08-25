@@ -1,13 +1,13 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-08-11 10:47:25
- * @Description : 背屈
+ * @LastEditTime: 2023-08-22 14:44:56
+ * @Description : 内翻-右
 -->
 <template>
-  <div class="test-dorsiflex">
+  <div class="test-varus-right">
     <div class="wrapper">
-      <div class="title">踝关节活动度测试 - 背屈</div>
+      <div class="title">踝关节活动度测试 - 内翻（右）</div>
 
       <div class="content">
         <div>
@@ -19,9 +19,9 @@
             @load="onLoad"
             :rotation="rotation"
             :controlsOptions="{
-              enablePan: false,
-              enableZoom: false,
-              enableRotate: false
+              enablePan: true,
+              enableZoom: true,
+              enableRotate: true
             }"
             :src="modelsSrc"
           />
@@ -32,7 +32,7 @@
         </div>
 
         <div class="value">
-          <div class="item">实时值：{{ xAngle }}°</div>
+          <div class="item">实时值：{{ yAngle }}°</div>
           <div class="item">最大值（结果）：{{ maxAngle }}°</div>
         </div>
       </div>
@@ -78,7 +78,7 @@ import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
 
 export default {
-  name: 'test-dorsiflex',
+  name: 'test-varus-right',
 
   components: {
     ModelStl
@@ -107,13 +107,13 @@ export default {
       angleArray: [], // 角度数组
       maxAngle: null, // 最大角度值（结果）
 
-      showImg: require('@/assets/img/Test/背屈.png'),
+      showImg: require('@/assets/img/Test/内翻-右.png'),
 
       /* 模型相关 */
       modelsSrc: path.join(__static, `models/Foot.STL`),
       rotation: ref({
         x: 0,
-        y: 0,
+        y: Math.PI / 2,
         z: 0
       })
     }
@@ -139,7 +139,7 @@ export default {
      * @description: 模型更新
      */
     onLoad() {
-      this.rotation.x = -(Math.PI * 2) / (360 / this.xAngle)
+      this.rotation.z = (Math.PI * 2) / (360 / this.yAngle)
     },
 
     /**
@@ -158,7 +158,7 @@ export default {
       this.$router.push({
         path: '/refresh',
         query: {
-          routerName: JSON.stringify('/test-dorsiflex'),
+          routerName: JSON.stringify('/test-varus-right'),
           duration: JSON.stringify(300)
         }
       })
@@ -216,22 +216,22 @@ export default {
               // console.log(data) // {String} -2.72,1.40,20.65
               const dataArray = data.split(',')
 
-              const x = parseFloat(parseFloat(dataArray[0]).toFixed(0)) // 绕x角度（超越±180°时会减少）
-              // const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
+              // const x = parseFloat(parseFloat(dataArray[0]).toFixed(0)) // 绕x角度（超越±180°时会减少）
+              const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
               // const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
-              // console.log(x)
+              // console.log(y)
 
-              this.xAngle = x - this.xStandard
+              this.yAngle = Math.abs(y - this.yStandard)
               this.onLoad()
 
               /* 数据校验 */
-              if (!isNaN(this.xAngle)) {
+              if (!isNaN(this.yAngle)) {
                 // 防止内存溢出
                 if (this.angleArray.length >= 1000) {
                   this.usbPort.write('N')
                 }
 
-                this.angleArray.push(this.xAngle)
+                this.angleArray.push(this.yAngle)
                 this.maxAngle = Math.max(...this.angleArray)
               }
             })
@@ -309,7 +309,7 @@ export default {
      */
     handleNext() {
       this.$router.push({
-        path: '/test-adduction'
+        path: '/test-valgus-right'
       })
     },
 
@@ -341,7 +341,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.test-dorsiflex {
+.test-varus-right {
   width: 100%;
   height: 100%;
   @include flex(row, center, center);

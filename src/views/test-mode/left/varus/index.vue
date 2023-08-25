@@ -1,13 +1,13 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-26 10:22:31
- * @LastEditTime: 2023-08-11 14:30:21
- * @Description : 内翻
+ * @LastEditTime: 2023-08-22 14:44:15
+ * @Description : 内翻-左
 -->
 <template>
-  <div class="test-varus">
+  <div class="test-varus-left">
     <div class="wrapper">
-      <div class="title">踝关节活动度测试 - 内翻</div>
+      <div class="title">踝关节活动度测试 - 内翻（左）</div>
 
       <div class="content">
         <div>
@@ -78,7 +78,7 @@ import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
 
 export default {
-  name: 'test-varus',
+  name: 'test-varus-left',
 
   components: {
     ModelStl
@@ -107,7 +107,7 @@ export default {
       angleArray: [], // 角度数组
       maxAngle: null, // 最大角度值（结果）
 
-      showImg: require('@/assets/img/Test/内翻.png'),
+      showImg: require('@/assets/img/Test/内翻-左.png'),
 
       /* 模型相关 */
       modelsSrc: path.join(__static, `models/Foot.STL`),
@@ -158,7 +158,7 @@ export default {
       this.$router.push({
         path: '/refresh',
         query: {
-          routerName: JSON.stringify('/test-varus'),
+          routerName: JSON.stringify('/test-varus-left'),
           duration: JSON.stringify(300)
         }
       })
@@ -309,7 +309,7 @@ export default {
      */
     handleNext() {
       this.$router.push({
-        path: '/test-valgus'
+        path: '/test-valgus-left'
       })
     },
 
@@ -341,7 +341,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.test-varus {
+.test-varus-left {
   width: 100%;
   height: 100%;
   @include flex(row, center, center);
