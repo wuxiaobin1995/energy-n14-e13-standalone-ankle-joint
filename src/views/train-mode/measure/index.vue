@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-27 15:59:39
- * @LastEditTime: 2023-08-16 08:37:20
+ * @LastEditTime: 2023-08-28 14:39:21
  * @Description : 具体训练
 -->
 <template>
@@ -10,7 +10,7 @@
       <el-page-header
         class="page"
         title="返回上一页"
-        :content="parameter.selectTrain"
+        :content="parameter.side + '-' + parameter.selectTrain"
         @back="handleBack"
       ></el-page-header>
 
@@ -52,10 +52,6 @@ export default {
       xStandard: null,
       yStandard: null,
       zStandard: null,
-
-      xAngle: null,
-      yAngle: null,
-      zAngle: null,
 
       angleDataOneArray: [], // 单个的角度数组，用于计算次数
       angleDataShowArray: [], // 展示的角度数组
@@ -167,17 +163,19 @@ export default {
               const dataArray = data.split(',')
 
               const x = parseFloat(parseFloat(dataArray[0]).toFixed(0)) // 绕x角度（超越±180°时会减少）
-              // const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
-              // const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
-              console.log(x)
+              const y = parseFloat(parseFloat(dataArray[1]).toFixed(0)) // 绕y角度（超越±90°时会减少，需要特殊处理）
+              const z = parseFloat(parseFloat(dataArray[2]).toFixed(0)) // 绕z角度（超越±180°时会减少）
 
-              this.xAngle = this.xStandard - x
+              let angle = 0
+              if (this.parameter.selectTrain === '跖屈') {
+                angle = this.xStandard - x
+              }
 
               /* 数据校验 */
-              if (!isNaN(this.xAngle)) {
-                this.angleDataOneArray.push(this.xAngle) // 单个的角度数组，用于计算次数
-                this.angleDataShowArray.push(this.xAngle) // 展示的角度数组
-                this.angleDataArray.push(this.xAngle) // 完整的角度数组
+              if (!isNaN(angle)) {
+                this.angleDataOneArray.push(angle) // 单个的角度数组，用于计算次数
+                this.angleDataShowArray.push(angle) // 展示的角度数组
+                this.angleDataArray.push(angle) // 完整的角度数组
 
                 this.option.series[0].data = this.angleDataShowArray
                 this.myChart.setOption(this.option)

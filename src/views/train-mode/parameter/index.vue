@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-27 09:34:58
- * @LastEditTime: 2023-07-28 17:32:15
+ * @LastEditTime: 2023-08-28 11:49:14
  * @Description : 训练参数配置
 -->
 <template>
@@ -87,6 +87,13 @@
               </el-select>
             </div>
             <div class="item">
+              <span>训练侧：</span>
+              <el-radio-group v-model="side">
+                <el-radio label="左">左</el-radio>
+                <el-radio label="右">右</el-radio>
+              </el-radio-group>
+            </div>
+            <div class="item">
               <span>重复次数：</span>
               <el-input-number
                 v-model="num"
@@ -164,6 +171,8 @@ export default {
         }
       ],
 
+      side: '左', // 训练侧（左、右）
+
       plantarFlexion: 30, // 跖屈
       dorsiflex: 20, // 背屈
       adduction: 25, // 内收
@@ -199,6 +208,8 @@ export default {
         'train-parameter-obj',
         JSON.stringify({
           selectTrain: this.selectTrain,
+
+          side: this.side,
 
           plantarFlexion: this.plantarFlexion,
           dorsiflex: this.dorsiflex,
@@ -260,7 +271,7 @@ export default {
           }
         }
         .right {
-          @include flex(column, stretch, center);
+          @include flex(column, stretch, stretch);
           .item {
             margin: 20px 0;
           }
