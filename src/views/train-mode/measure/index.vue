@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-27 15:59:39
- * @LastEditTime: 2023-08-28 14:39:21
+ * @LastEditTime: 2023-09-06 10:15:38
  * @Description : 具体训练
 -->
 <template>
@@ -169,6 +169,16 @@ export default {
               let angle = 0
               if (this.parameter.selectTrain === '跖屈') {
                 angle = this.xStandard - x
+              } else if (this.parameter.selectTrain === '背屈') {
+                angle = x - this.xStandard
+              } else if (this.parameter.selectTrain === '内收') {
+                angle = Math.abs(z - this.zStandard)
+              } else if (this.parameter.selectTrain === '外展') {
+                angle = Math.abs(z - this.zStandard)
+              } else if (this.parameter.selectTrain === '内翻') {
+                angle = Math.abs(y - this.yStandard)
+              } else if (this.parameter.selectTrain === '外翻') {
+                angle = Math.abs(y - this.yStandard)
               }
 
               /* 数据校验 */
