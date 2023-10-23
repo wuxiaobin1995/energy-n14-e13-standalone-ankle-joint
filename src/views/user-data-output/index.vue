@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 21:29:20
- * @LastEditTime: 2023-08-22 09:17:03
+ * @LastEditTime: 2023-10-08 15:29:14
  * @Description : 导出所选用户的数据（测试、训练、......）
 -->
 <template>
@@ -211,7 +211,8 @@ export default {
                 birthday: '出生日期',
                 hospital: '医院',
                 pdfTime: '测量时间',
-                affectedSide: '患侧'
+                affectedSide: '患侧',
+                angleResultArray: '结果'
               }
               const tHeader = Object.values(excelTitle)
               // 会根据key键的顺序、属性值等动态变化
@@ -308,7 +309,15 @@ export default {
                 birthday: '出生日期',
                 hospital: '医院',
                 pdfTime: '测量时间',
-                affectedSide: '患侧'
+                affectedSide: '患侧',
+                selectTrain: '训练动作',
+                side: '训练侧',
+                num: '重复次数',
+                maxDistance: '设定角度',
+                entadRate: '向心比',
+                keepdRate: '保持比',
+                offcenterRate: '离心比',
+                resultRate: '完成度%'
               }
               const tHeader = Object.values(excelTitle)
               // 会根据key键的顺序、属性值等动态变化

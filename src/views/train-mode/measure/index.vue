@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-27 15:59:39
- * @LastEditTime: 2023-09-06 10:15:38
+ * @LastEditTime: 2023-10-08 15:28:07
  * @Description : 具体训练
 -->
 <template>
@@ -14,12 +14,48 @@
         @back="handleBack"
       ></el-page-header>
 
+      <div class="val">
+        <div class="result-rate">
+          <div class="title">完成度</div>
+          <div class="num">{{ resultRate }} %</div>
+        </div>
+        <div class="max-angle">
+          <div class="title">最大角度(°)</div>
+          <div class="num">{{ maxDistance }}</div>
+        </div>
+        <div class="num-wrapper">
+          <div class="title">剩余次数</div>
+          <div class="num">
+            <span class="now-num">{{ nowNum }}</span> / {{ parameter.num }}
+          </div>
+        </div>
+      </div>
+
       <div class="chart">
         <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
       </div>
 
       <div class="btn">
-        <el-button class="item" type="primary">开始训练</el-button>
+        <el-button
+          class="item"
+          type="primary"
+          :disabled="!startAllow"
+          @click="handleStart"
+          >开始训练</el-button
+        >
+        <el-button
+          class="item"
+          type="success"
+          :disabled="!pdfAllow"
+          @click="handlePdf"
+          >查看报告</el-button
+        >
+        <el-button class="item" type="info" @click="handleRefresh"
+          >刷新页面</el-button
+        >
+        <el-button class="item" type="danger" @click="handleBack"
+          >返 回</el-button
+        >
       </div>
     </div>
   </div>
@@ -29,6 +65,9 @@
 /* 串口通信库 */
 import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
+
+/* 数据库 */
+import { initDB } from '@/db/index.js'
 
 export default {
   name: 'train-measure',
@@ -48,6 +87,10 @@ export default {
       option: {},
       xData: [], // 横坐标数组
 
+      /* 控制相关 */
+      startAllow: true, // 开始按钮的禁用与否
+      pdfAllow: false, // 查看PDF按钮的禁用与否
+
       /* 其他 */
       xStandard: null,
       yStandard: null,
@@ -57,9 +100,11 @@ export default {
       angleDataShowArray: [], // 展示的角度数组
       angleDataArray: [], // 完整的角度数组
 
-      nowNum: 0, // 目前的次数
-      pdfTime: null, // 该次训练完成时间
+      nowNum: 0, // 实时的次数
       resultRate: 0, // 最终完成比例
+      maxDistance: 0, // 最高点°
+      original: 4, // 最低点°，暂定±4°以内
+      pdfTime: null, // 该次训练完成时间
 
       /* 参考曲线 */
       standardGraph: [], // 单个基准图形
@@ -189,6 +234,117 @@ export default {
 
                 this.option.series[0].data = this.angleDataShowArray
                 this.myChart.setOption(this.option)
+
+                /* 实时递增次数 */
+                if (
+                  this.angleDataOneArray.length === this.standardGraph.length
+                ) {
+                  this.angleDataOneArray = []
+                  this.nowNum += 1
+                }
+
+                /* 展示曲线走到终点重新开始 */
+                if (
+                  this.angleDataShowArray.length === this.referenceGraph.length
+                ) {
+                  this.angleDataShowArray = []
+                }
+
+                /* 训练完成 */
+                if (this.nowNum === this.parameter.num) {
+                  if (this.usbPort) {
+                    if (this.usbPort.isOpen) {
+                      /* 关闭串口通信 */
+                      this.usbPort.close()
+
+                      /* 计算完成度 */
+                      const matchArray = [] // 参考曲线数组
+                      const yesArray = [] // 达标数据数组
+                      for (let i = 0; i < this.nowNum; i++) {
+                        matchArray.push(...this.standardGraph)
+                      }
+                      for (let i = 0; i < matchArray.length; i++) {
+                        const relative = Math.abs(
+                          this.angleDataArray[i] - matchArray[i]
+                        )
+                        if (relative <= this.original) {
+                          yesArray.push(relative)
+                        }
+                      }
+                      this.resultRate = parseFloat(
+                        ((yesArray.length / matchArray.length) * 100).toFixed(1)
+                      )
+                      this.startAllow = true
+                      /* 验证一下结果正确性 */
+                      if (this.resultRate) {
+                        /* 保存到数据库 */
+                        this.pdfTime = this.$moment().format(
+                          'YYYY-MM-DD HH:mm:ss'
+                        )
+                        const hospital = window.localStorage.getItem('hospital')
+                        const db = initDB()
+                        db.train_data
+                          .add({
+                            hospital: hospital,
+                            userId: this.$store.state.currentUserInfo.userId,
+                            userName:
+                              this.$store.state.currentUserInfo.userName,
+                            sex: this.$store.state.currentUserInfo.sex,
+                            affectedSide:
+                              this.$store.state.currentUserInfo.affectedSide,
+                            height: this.$store.state.currentUserInfo.height,
+                            weight: this.$store.state.currentUserInfo.weight,
+                            birthday:
+                              this.$store.state.currentUserInfo.birthday,
+
+                            selectTrain: this.parameter.selectTrain, // 训练动作
+                            side: this.parameter.side, // 训练侧（左、右）
+                            num: this.parameter.num, // 重复次数
+                            maxDistance: this.maxDistance, // 最高点°
+                            entadRate: this.parameter.entadRate, // 向心比
+                            keepdRate: this.parameter.keepdRate, // 保持比
+                            offcenterRate: this.parameter.offcenterRate, // 离心比
+
+                            bgArray: matchArray, // 完整参考曲线
+                            angleDataArray: this.angleDataArray, // 完整的角度数组
+
+                            resultRate: this.resultRate, // 完成度%
+
+                            pdfTime: this.pdfTime,
+                            type: '踝关节活动度训练'
+                          })
+                          .then(() => {
+                            this.$message({
+                              message: '数据保存成功',
+                              type: 'success',
+                              duration: 2000
+                            })
+                            this.pdfAllow = true
+                          })
+                          .catch(() => {
+                            this.$alert(
+                              `请重新连接USB线，然后点击"返回上一页"按钮，重新训练！`,
+                              '数据保存失败',
+                              {
+                                type: 'error',
+                                showClose: false,
+                                center: true,
+                                confirmButtonText: '返回上一页',
+                                callback: () => {
+                                  this.handleBack()
+                                }
+                              }
+                            )
+                          })
+                      } else {
+                        this.$message({
+                          message: `完成比例为${this.resultRate}，数值不正常，请点击"开始训练"按钮重新测试`,
+                          type: 'error'
+                        })
+                      }
+                    }
+                  }
+                }
               }
             })
           } else {
@@ -243,19 +399,31 @@ export default {
      */
     initChart() {
       /* 计算最终参考图形 */
-      const original = 2 // 最低点°
+      if (this.parameter.selectTrain === '跖屈') {
+        this.maxDistance = this.parameter.plantarFlexion
+      } else if (this.parameter.selectTrain === '背屈') {
+        this.maxDistance = this.parameter.dorsiflex
+      } else if (this.parameter.selectTrain === '内收') {
+        this.maxDistance = this.parameter.adduction
+      } else if (this.parameter.selectTrain === '外展') {
+        this.maxDistance = this.parameter.abduction
+      } else if (this.parameter.selectTrain === '内翻') {
+        this.maxDistance = this.parameter.varus
+      } else if (this.parameter.selectTrain === '外翻') {
+        this.maxDistance = this.parameter.valgus
+      }
       const time = 1 // 间隔时长s
-      const maxDistance = this.parameter.plantarFlexion // 最高点°
+
       // 开始段
       for (let i = 0; i <= time * 5; i++) {
-        this.standardGraph.push(original)
+        this.standardGraph.push(this.original)
       }
       // 中间段，这里的15目前是固定的，后续可能会改其他值
       const intervalUp =
-        (maxDistance - original) / (this.parameter.entadRate * 15) // 上升间隔值
+        (this.maxDistance - this.original) / (this.parameter.entadRate * 15) // 上升间隔值
       const intervalDown =
-        (maxDistance - original) / (this.parameter.offcenterRate * 15) // 下降间隔值
-      let sum = original
+        (this.maxDistance - this.original) / (this.parameter.offcenterRate * 15) // 下降间隔值
+      let sum = this.original
       for (let i = 0; i < this.parameter.entadRate * 15; i++) {
         sum = parseFloat(sum + intervalUp)
         this.standardGraph.push(sum)
@@ -269,7 +437,7 @@ export default {
       }
       // 结束段
       for (let i = 0; i < time * 5; i++) {
-        this.standardGraph.push(original)
+        this.standardGraph.push(this.original)
       }
       // 最终复制3个
       for (let i = 0; i < 3; i++) {
@@ -294,7 +462,7 @@ export default {
         },
         yAxis: {
           type: 'value',
-          name: '单位：度',
+          name: '单位：角度(°)',
           min: 0
         },
         series: [
@@ -323,6 +491,43 @@ export default {
       }
 
       this.myChart.setOption(this.option)
+    },
+
+    /**
+     * @description: 开始按钮
+     */
+    handleStart() {
+      this.startAllow = false
+      this.pdfAllow = false
+
+      this.angleDataOneArray = []
+      this.angleDataShowArray = []
+      this.angleDataArray = []
+
+      this.nowNum = 0
+      this.resultRate = 0
+
+      if (this.usbPort) {
+        if (!this.usbPort.isOpen) {
+          this.usbPort.open()
+        }
+      }
+
+      this.usbPort.write('Y')
+    },
+
+    /**
+     * @description: 查看PDF按钮
+     */
+    handlePdf() {
+      this.$router.push({
+        path: '/train-pdf',
+        query: {
+          userId: JSON.stringify(this.$store.state.currentUserInfo.userId),
+          pdfTime: JSON.stringify(this.pdfTime),
+          routerName: JSON.stringify('/train-parameter')
+        }
+      })
     }
   }
 }
@@ -350,15 +555,62 @@ export default {
       left: 30px;
     }
 
+    .val {
+      @include flex(row, space-around, center);
+      .result-rate {
+        @include flex(column, center, center);
+        .title {
+          font-size: 22px;
+          margin-bottom: 5px;
+        }
+        .num {
+          background-color: rgba(155, 155, 155, 0.6);
+          border-radius: 4px;
+          padding: 2px 10px;
+          font-size: 18px;
+        }
+      }
+      .max-angle {
+        @include flex(column, center, center);
+        .title {
+          font-size: 22px;
+          margin-bottom: 5px;
+        }
+        .num {
+          background-color: rgba(155, 155, 155, 0.6);
+          border-radius: 4px;
+          padding: 2px 10px;
+          font-size: 18px;
+        }
+      }
+      .num-wrapper {
+        @include flex(column, center, center);
+        .title {
+          font-size: 22px;
+          margin-bottom: 5px;
+        }
+        .num {
+          font-size: 18px;
+          .now-num {
+            background-color: rgba(155, 155, 155, 0.6);
+            border-radius: 4px;
+            padding: 2px 10px;
+          }
+        }
+      }
+    }
+
     .chart {
       flex: 1;
       width: 100%;
     }
 
     .btn {
-      @include flex(column, flex-end, center);
+      @include flex(row, center, center);
       .item {
-        width: 190px;
+        font-size: 22px;
+        margin: 0 60px;
+        width: 160px;
       }
     }
   }

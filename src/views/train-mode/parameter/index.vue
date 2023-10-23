@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-07-27 09:34:58
- * @LastEditTime: 2023-08-28 11:49:14
+ * @LastEditTime: 2023-10-08 10:35:52
  * @Description : 训练参数配置
 -->
 <template>

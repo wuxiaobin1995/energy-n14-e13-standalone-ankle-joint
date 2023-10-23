@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2023-06-25 11:15:18
- * @LastEditTime: 2023-08-23 10:25:24
+ * @LastEditTime: 2023-10-08 14:38:52
  * @Description : 路由
  */
 import Vue from 'vue'
@@ -205,7 +205,7 @@ const routes = [
         path: 'train-measure',
         name: 'train-measure',
         component: () => import('@/views/train-mode/measure'),
-        meta: ['跖屈']
+        meta: ['具体训练']
       },
 
       /* MTT分阶模块 */
@@ -222,9 +222,27 @@ const routes = [
           // 踝关节活动度测试
           {
             path: 'activity',
-            name: 'activity',
+            name: 'test-activity',
             component: () => import('@/views/record/test/activity'),
             meta: ['踝关节活动度测试']
+          }
+        ]
+      },
+
+      // 训练
+      {
+        path: 'train-record',
+        name: 'train-record',
+        component: () => import('@/views/record/train'),
+        meta: ['训练-数据记录'],
+        redirect: '/train-record/activity',
+        children: [
+          // 踝关节活动度训练
+          {
+            path: 'activity',
+            name: 'train-activity',
+            component: () => import('@/views/record/train/activity'),
+            meta: ['踝关节活动度训练']
           }
         ]
       }
@@ -238,6 +256,15 @@ const routes = [
     name: 'test-pdf',
     component: () => import('@/views/test-mode/pdf'),
     meta: ['踝关节活动度测试-PDF报告']
+  },
+
+  /* 训练报告 */
+  // 踝关节训练-PDF报告
+  {
+    path: '/train-pdf',
+    name: 'train-pdf',
+    component: () => import('@/views/train-mode/pdf'),
+    meta: ['踝关节训练-PDF报告']
   },
 
   {

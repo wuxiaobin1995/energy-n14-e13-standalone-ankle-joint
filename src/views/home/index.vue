@@ -1,19 +1,14 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-06-23 09:06:38
- * @LastEditTime: 2023-08-22 09:09:15
+ * @LastEditTime: 2023-10-17 16:41:19
  * @Description : home
 -->
 <template>
   <div class="home">
     <div class="wrapper">
       <div class="main-photo">
-        <el-image
-          :style="{ display: 'none' }"
-          class="item0"
-          :src="src0"
-          fit="scale-down"
-        ></el-image>
+        <el-image class="item0" :src="src0" fit="scale-down"></el-image>
       </div>
       <div class="one">
         <!-- <el-image
